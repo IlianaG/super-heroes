@@ -4,7 +4,7 @@ import { Superhero } from '../types/Superhero';
 import SuperheroList from './SuperheroList';
 
 const SuperheroHome: React.FC = () => {
-  const [superheroes, setSuperheroes] = useState<Superhero[]>([]);
+  const [superheroes, setSuperheroes] = useState<Superhero[] | null>(null);
 
   useEffect(() => {
     axios.get('/api/superheroes')
@@ -16,12 +16,14 @@ const SuperheroHome: React.FC = () => {
       });
   }, []);
 
-  function filterSuperheroes(superheroes: Superhero[], search: String): Superhero[]{
-    if(search){
+  function filterSuperheroes(superheroes: Superhero[] | null, search: String): Superhero[]{
+    if(superheroes && search){
       const searchLowercase = search.toLocaleLowerCase();
       return superheroes.filter(hero => hero.name.toLocaleLowerCase().includes(searchLowercase));
-    }else{
+    } else if(superheroes){
       return superheroes;
+    }else{
+      return [] as Superhero[];
     }
   }
 
@@ -31,6 +33,10 @@ const SuperheroHome: React.FC = () => {
 
   const [searchText, setSearchText] = useState('');
   const filteredSuperheroes  = filterSuperheroes(superheroes, searchText);
+
+  if(!superheroes){
+    return <div>Loading...</div>
+  }
 
   return (
     <div>

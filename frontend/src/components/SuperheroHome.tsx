@@ -16,10 +16,24 @@ const SuperheroHome: React.FC = () => {
       });
   }, []);
 
-  function filterSuperheroes(superheroes: Superhero[] | null, search: String): Superhero[]{
+  function filterSuperheroesByName(superheroes: Superhero[] | null, search: String): Superhero[]{
     if(superheroes && search){
       const searchLowercase = search.toLocaleLowerCase();
       return superheroes.filter(hero => hero.name.toLocaleLowerCase().includes(searchLowercase));
+    } else if(superheroes){
+      return superheroes;
+    }else{
+      return [] as Superhero[];
+    }
+  }
+
+  function filterSuperheroesByGender(appearance: Superhero[] | null, gender:String): Superhero[]{
+    if(superheroes && gender){
+      if(gender === "All"){
+        return superheroes;
+      }else{
+        return superheroes.filter(hero => hero.appearance.gender === gender);
+      }
     } else if(superheroes){
       return superheroes;
     }else{
@@ -32,7 +46,17 @@ const SuperheroHome: React.FC = () => {
   }
 
   const [searchText, setSearchText] = useState('');
-  const filteredSuperheroes  = filterSuperheroes(superheroes, searchText);
+  const filteredSuperheroes  = filterSuperheroesByName(superheroes, searchText);
+
+  const [genderSelect, setGenderSelect] = useState('');
+  const filteredSuperheroesGender  = filterSuperheroesByGender(superheroes, genderSelect);
+
+  const handleGenderSelect = (event: React.ChangeEvent<{ value: string }>)=>{
+    setGenderSelect(event?.target?.value);
+
+}
+console.log("Selected Gender");
+console.log(genderSelect);
 
   if(!superheroes){
     return <div>Loading...</div>
@@ -47,8 +71,16 @@ const SuperheroHome: React.FC = () => {
                 <div className="input-group">
                   <input type="text" value={searchText} onChange={handleChange} className="form-control" placeholder="Search superhero..."/>
                 </div>
+
+
+              <select className="form-select" defaultValue='All' onChange={handleGenderSelect}>
+                <option value="All">All Genders</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
               </div>
             </div>
+
           </div>
           <div className="b-example-divider"></div>
         </div>
@@ -56,7 +88,7 @@ const SuperheroHome: React.FC = () => {
         </p>
         
         <SuperheroList
-          superheroes={filteredSuperheroes} />
+          superheroes={filteredSuperheroesGender} />
     </div>
   );
 }
